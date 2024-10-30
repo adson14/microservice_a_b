@@ -1,19 +1,45 @@
 version: '3.8'
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
+  service-a:
+    build:
+      context: ./services/service-a
+      dockerfile: Dockerfile.dev
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgres://postgres:password@service-db:5432/service_a
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - service-db
+      - rabbitmq
+
+  service-b:
+    build:
+      context: ./services/service-b
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3002:3002"
+    environment:
+      - DATABASE_URL=postgres://postgres:password@service-db:5432/service_b
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - service-db
+      - rabbitmq
 
   service-db:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: service_shared
+      POSTGRES_DB: shared_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 networks:
   default:
