@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: service-a
+  template:
+    metadata:
+      labels:
+        app: service-a
+    spec:
+      initContainers:
+      - name: wait-for-rabbitmq
+        image: busybox
+        command: ['sh', '-c', 'until nc -z -v -w30 rabbitmq 5672; do echo "Waiting for rabbitmq..."; sleep 5; done;']
+
+      containers:
+      - name: service-a
+        image: adson14/service-a:v1
+        ports:
+        - containerPort: 3001
+        envFrom:
+        - configMapRef:
+            name: service-a-env
+        - secretRef:
+            name: secret-service-a    
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-a
+spec:
+  selector:
+    app: service-a
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+      nodePort: 30001
+  type: LoadBalancer
