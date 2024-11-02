@@ -17,6 +17,18 @@ spec:
         image: postgres:13
         ports:
         - containerPort: 5432
+
+        livenessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - postgres
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          failureThreshold: 3
+          timeoutSeconds: 5 
+
         envFrom:
         - configMapRef:
             name: service-a-db-env

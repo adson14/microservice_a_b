@@ -3,5 +3,7 @@ kind: ConfigMap
 metadata:
   name: service-a-env
 data:
-  DATABASE_URL: "service-a-db.default.svc.cluster.local://postgres:password@service-a-db:5432/service_a"
   RABBITMQ_URL: "amqp://rabbitmq.default.svc.cluster.local"
+  DB_HOST: "service-a-db"
+  DB_PORT: "5432"
+  DB_DATABASE: "service_a"

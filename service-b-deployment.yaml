@@ -12,16 +12,35 @@ spec:
       labels:
         app: service-b
     spec:
-      initContainers:
-        - name: wait-for-rabbitmq
-          image: busybox
-          command: ['sh', '-c', 'until nc -z -v -w30 rabbitmq 5672; do echo "Waiting for rabbitmq..."; sleep 5; done;']
-
       containers:
       - name: service-b
-        image: adson14/service-b:v1
+        image: adson14/service-b:v1.1
         ports:
         - containerPort: 3002
+
+        startupProbe: #Verifica a inicialização do container
+          httpGet:
+            path: /healthz
+            port: 3002
+          periodSeconds: 5 # Intervalo de verificação
+          failureThreshold: 10 # Quantidade de falhas    
+
+        readinessProbe: #Controla o recebimento de trafego removendo o container do load balancer em caso de falha
+          httpGet:
+            path: /healthz
+            port: 3002
+          failureThreshold: 10
+          periodSeconds: 20
+
+        livenessProbe: # verifica a saúde do container, caso contrario, o container será reiniciado
+          httpGet:
+            path: /healthz
+            port: 3002
+          periodSeconds: 20
+          failureThreshold: 1 # Após 1 falhas, o container será reiniciado
+          timeoutSeconds: 3 # Tempo limite para a aplicação responder
+          successThreshold: 1 # Quantidade de sucessos para considerar o container saudável
+
         envFrom:
         - configMapRef:
             name: service-b-env
