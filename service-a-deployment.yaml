@@ -20,11 +20,11 @@ spec:
 
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "50m"
+            memory: "512Mi"
+            cpu: "500m"
           limits:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: "1024Mi"
+            cpu: "1000m"
 
         startupProbe: #Verifica a inicialização do container
           httpGet:
@@ -67,4 +67,4 @@ spec:
     - protocol: TCP
       port: 3001
       targetPort: 3001
-  type: LoadBalancer
+  type: ClusterIP
