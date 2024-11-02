@@ -30,14 +30,13 @@ spec:
           timeoutSeconds: 5 
 
         envFrom:
-        - configMapRef:
-            name: service-a-db-env
-
+        - secretRef:
+            name: secret-service-a-db
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-a-db
+  name: service-a-db-service
 spec:
   ports:
     - port: 5432

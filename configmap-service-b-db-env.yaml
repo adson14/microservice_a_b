@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: service-b-db-env
-data:
-  POSTGRES_USER: "postgres"
-  POSTGRES_PASSWORD: "password"
-  POSTGRES_DB: "service_b"

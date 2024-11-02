@@ -29,3 +29,4 @@
 - Postgress SQL
 - RabitMQ
 - Docker
+- Kubernetes

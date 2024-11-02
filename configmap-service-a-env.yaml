@@ -4,6 +4,6 @@ metadata:
   name: service-a-env
 data:
   RABBITMQ_URL: "amqp://rabbitmq.default.svc.cluster.local"
-  DB_HOST: "service-a-db"
+  DB_HOST: "service-a-db-service"
   DB_PORT: "5432"
   DB_DATABASE: "service_a"

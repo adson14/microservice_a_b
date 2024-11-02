@@ -28,16 +28,16 @@ spec:
           periodSeconds: 60
           failureThreshold: 3
           timeoutSeconds: 5
-          
+
         envFrom:
-        - configMapRef:
-            name: service-b-db-env
+        - secretRef:
+            name: secret-service-b-db
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-b-db
+  name: service-b-db-service
 spec:
   ports:
     - port: 5432

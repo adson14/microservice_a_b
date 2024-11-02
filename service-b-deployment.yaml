@@ -18,6 +18,15 @@ spec:
         ports:
         - containerPort: 3002
 
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+
+
         startupProbe: #Verifica a inicialização do container
           httpGet:
             path: /healthz
@@ -51,12 +60,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-b
+  name: service-b-service
 spec:
   selector:
     app: service-b
   ports:
     - protocol: TCP
       port: 3002
-      targetPort: 3002
   type: LoadBalancer
