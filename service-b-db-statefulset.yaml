@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: service-b-db
 spec:
+  serviceName: service-b-db-postgres
   replicas: 2
   selector:
     matchLabels:
@@ -27,20 +28,31 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 60
           failureThreshold: 3
-          timeoutSeconds: 5
+          timeoutSeconds: 5 
 
         envFrom:
         - secretRef:
             name: secret-service-b-db
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-volume    
 
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]          
+        resources:
+          requests:
+            storage: 1Gi  
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-b-db-service
+  name: service-b-db-postgres
 spec:
-  ports:
-    - port: 5432
   selector:
     app: service-b-db
-  type: ClusterIP
+  ports:
+    - port: 5432
+  clusterIP: None

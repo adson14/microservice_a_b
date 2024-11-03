@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: service-a-db
 spec:
+  serviceName: service-a-db-postgres
   replicas: 2
   selector:
     matchLabels:
@@ -32,14 +33,26 @@ spec:
         envFrom:
         - secretRef:
             name: secret-service-a-db
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-volume    
+
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]          
+        resources:
+          requests:
+            storage: 1Gi  
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-a-db-service
+  name: service-a-db-postgres
 spec:
-  ports:
-    - port: 5432
   selector:
     app: service-a-db
-  type: ClusterIP
+  ports:
+    - port: 5432
+  clusterIP: None
