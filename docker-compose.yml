@@ -14,6 +14,7 @@ services:
     depends_on:
       - service-a-db
       - rabbitmq
+      - otel-collector
 
   service-b:
     build:
@@ -53,6 +54,22 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  otel-collector:
+      image: otel/opentelemetry-collector-contrib:latest
+      volumes:
+        - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+      command:
+        - "--config=/etc/otel-collector-config.yml"
+      ports:
+        - "4317:4317"  # Porta para OTLP gRPC
+        - "4318:4318"  # Porta para OTLP HTTP
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - '16686:16686'  # Interface do Jaeger
+      - '4319:4317'  # Porta de coleta de traços    
 
 networks:
   default:
