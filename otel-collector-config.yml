@@ -6,32 +6,62 @@ receivers:
       grpc:
         endpoint: "0.0.0.0:4317"
 
+  
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      paging:
+        metrics:
+          system.paging.utilization:
+            enabled: true
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      disk:
+      filesystem:
+        metrics:
+          system.filesystem.utilization:
+            enabled: true
+      load:
+      memory:
+      network:
+      processes:
+
+connectors:
+  datadog/connector:
+
+
 exporters:
   otlp/jaeger:
     endpoint: "http://jaeger:4317"
     tls:
       insecure: true
-
+  datadog:
+    api:
+      site: "datadoghq.com"  # Use o 'datadoghq.eu' para a Europa
+      key: ${DATA_DOG_API_KEY}
+      
 processors:
-  batch: {}
+  batch:
 
 extensions:
   health_check:
-    check_interval: 60s
 
 service:
+  extensions: [health_check]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/jaeger] # Adicione 'datadog' aqui futuramente
+      exporters: [otlp/jaeger,datadog,datadog/connector] # Adicione 'datadog' aqui futuramente
 
     metrics:
-      receivers: [otlp]
+      receivers: [otlp,hostmetrics,datadog/connector]
       processors: [batch]
-      exporters: [otlp/jaeger] # Adicione 'datadog' aqui futuramente
+      exporters: [datadog] # Adicione 'datadog' aqui futuramente
 
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/jaeger] # Adicione 'datadog' aqui futuramente  
+      exporters: [otlp/jaeger,datadog] # Adicione 'datadog' aqui futuramente  

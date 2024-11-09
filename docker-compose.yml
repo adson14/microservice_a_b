@@ -30,6 +30,7 @@ services:
     depends_on:
       - service-b-db
       - rabbitmq
+      - otel-collector
 
   service-a-db:
     image: postgres:13
@@ -64,6 +65,8 @@ services:
       ports:
         - "4317:4317"  # Porta para OTLP gRPC
         - "4318:4318"  # Porta para OTLP HTTP
+      environment:
+        - DATA_DOG_API_KEY=${DATA_DOG_API_KEY}
 
   jaeger:
     image: jaegertracing/all-in-one:latest
